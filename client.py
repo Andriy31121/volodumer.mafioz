@@ -1,14 +1,38 @@
-import socket
+from socket import *
+import threading
+import time
 
-olient_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def connect():
+    while True:
+        try:
+            sock = socket(AF_INET, SOCK_STREAM)
+            sock.connect(('6.tcp.eu.ngrok.io', 16426))
+            name = input("Enter name: ")
+            sock.send(name.encode())
+            return sock
+        except:
+            print("Connection failed, retrying...")
+            time.sleep(1)
 
-olient_socket.connect(('tcp://5.tcp.eu.ngrok.io', 14467))
+client_socket = connect()
 
-msg = input("введіть повідомленя:")
-olient_socket.send(msg.encode())
+def send_message():
+    while True:
+        msg = input()
+        if msg.lower() == 'exit':
+            client_socket.close()
+            break
+        client_socket.send(msg.encode())
 
-response = olient_socket.recv(1024).decode()
-print(f'Відповідь від сервера: {response}')
+threading.Thread(target=send_message, daemon=True).start()
 
-olient_socket.close()
-
+while True:
+    try:
+        message = client_socket.recv(1024).decode().strip()
+        if message:
+            print(message)
+        else:
+            break
+    except:
+        print("Disconnected")
+        break
