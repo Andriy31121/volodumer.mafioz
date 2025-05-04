@@ -6,7 +6,7 @@ def connect():
     while True:
         try:
             sock = socket(AF_INET, SOCK_STREAM)
-            sock.connect(('6.tcp.eu.ngrok.io', 16426))
+            sock.connect(('7.tcp.eu.ngrok.io', 19054))
             name = input("Enter name: ")
             sock.send(name.encode())
             return sock
